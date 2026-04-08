@@ -119,6 +119,32 @@ Use this section to document the experiments you ran. For example:
 - What happened when you added tempo or valence to the score
 - How did your system behave for different types of users
 
+## Experiments I Tried
+
+### Profile 1: Happy Pop Fan
+- Genre: pop | Mood: happy | Energy: 0.8
+- Top result: Sunrise City (3.98) — genre + mood + energy all matched
+- [INSERT SCREENSHOT HERE]
+
+### Profile 2: Chill Lofi Listener
+- Genre: lofi | Mood: chill | Energy: 0.2 | Likes acoustic: Yes
+- Top result: Library Rain (4.35) — perfect match on all 4 factors
+- Spacewalk Thoughts appeared despite being ambient not lofi 
+  because its chill mood and low energy still scored well
+- [INSERT SCREENSHOT HERE]
+
+### Profile 3: Intense Rock Fan
+- Genre: rock | Mood: intense | Energy: 0.9
+- Top result: Storm Runner (3.99) — perfect rock/intense/high energy match
+- Gym Hero appeared at #2 despite being pop because its 
+  intensity and high energy still scored points
+- [INSERT SCREENSHOT HERE]
+
+### What I Noticed
+- The lofi profile benefits most from the acousticness bonus
+- Rock fan gets fewer perfect matches because fewer rock 
+  songs are in the dataset
+- Genre is clearly the biggest factor — wrong genre = big score drop
 ---
 
 ## Limitations and Risks
