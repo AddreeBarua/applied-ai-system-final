@@ -10,6 +10,43 @@ You will implement the functions in recommender.py:
 """
 
 from recommender import load_songs, recommend_songs
+from tabulate import tabulate
+
+
+def print_recommendations(profile_name: str, recommendations: list) -> None:
+    """
+    Displays recommendations in a formatted table.
+    
+    Args:
+        profile_name: Name of the user profile
+        recommendations: List of tuples (song_dict, score, explanation_string)
+    """
+    # Create table data
+    table_data = []
+    
+    for rank, rec in enumerate(recommendations, 1):
+        song, score, explanation = rec
+        table_data.append([
+            rank,
+            song['title'],
+            song['artist'],
+            song['genre'],
+            song['mood'],
+            f"{score:.2f}",
+            explanation
+        ])
+    
+    # Define column headers
+    headers = ["Rank", "Title", "Artist", "Genre", "Mood", "Score", "Why Recommended"]
+    
+    # Print profile header
+    print(f"\n{'='*120}")
+    print(f"  {profile_name}")
+    print(f"{'='*120}\n")
+    
+    # Print formatted table
+    print(tabulate(table_data, headers=headers, tablefmt="fancy_grid"))
+    print()
 
 
 def main() -> None:
@@ -47,20 +84,8 @@ def main() -> None:
     
     for profile in profiles:
         profile_name = profile.pop("name")  # Extract name for display
-        
-        print(f"\n{'='*60}")
-        print(f"{profile_name}")
-        print(f"{'='*60}")
-        print(f"Genre: {profile['genre']} | Mood: {profile['mood']} | Energy: {profile['energy']} | Acoustic: {profile['likes_acoustic']}")
-        print(f"\nTop 5 recommendations:\n")
-        
         recommendations = recommend_songs(profile, songs, k=5)
-        
-        for rank, rec in enumerate(recommendations, 1):
-            song, score, explanation = rec
-            print(f"{rank}. {song['title']} - Score: {score:.2f}")
-            print(f"   Because: {explanation}")
-            print()
+        print_recommendations(profile_name, recommendations)
 
 
 if __name__ == "__main__":
