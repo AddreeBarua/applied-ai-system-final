@@ -9,3 +9,13 @@ id,title,artist,genre,mood,energy,tempo_bpm,valence,danceability,acousticness
 8,Night Drive Loop,Neon Echo,synthwave,moody,0.75,110,0.49,0.73,0.22
 9,Focus Flow,LoRoom,lofi,focused,0.40,80,0.59,0.60,0.78
 10,Rooftop Lights,Indigo Parade,indie pop,happy,0.76,124,0.81,0.82,0.35
+11,Street Vibes,Urban Beats,hip-hop,energetic,0.85,95,0.72,0.80,0.12
+12,Digital Euphoria,Synth Wave Crew,edm,energetic,0.95,128,0.88,0.92,0.08
+13,Moonlit Sonata,Classical Dreams,classical,romantic,0.35,85,0.78,0.35,0.88
+14,Highway Home,Country Roads,country,nostalgic,0.60,110,0.75,0.72,0.72
+15,Velvet Dreams,R&B Smooth,rnb,romantic,0.72,105,0.82,0.75,0.45
+16,Inner Thoughts,Cipher Mind,hip-hop,sad,0.55,90,0.48,0.65,0.18
+17,Neon Nights,Pulse Synth,edm,energetic,0.92,135,0.85,0.89,0.10
+18,Peaceful Composition,String Quartet,classical,calm,0.25,70,0.80,0.25,0.95
+19,Lost in Time,Folk Tales,country,sad,0.50,100,0.62,0.58,0.78
+20,Soulmate,Beautiful Groove,rnb,romantic,0.70,100,0.80,0.72,0.42

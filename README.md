@@ -29,6 +29,51 @@ Some prompts to answer:
 
 You can include a simple diagram or bullet list if helpful.
 
+## How The System Works
+
+Real-world platforms like Spotify and YouTube study the actual 
+characteristics of songs — things like genre, mood, and energy 
+level — and match them against what a user has shown they enjoy. 
+My system does the same thing on a smaller scale using a simple 
+point-based scoring approach.
+
+### What The System Does Step By Step
+
+1. It loads a catalog of 20 songs from songs.csv
+2. It reads the user's taste profile (genre, mood, energy preference)
+3. It scores every single song against that profile
+4. It sorts all scores from highest to lowest
+5. It returns the top 5 songs as recommendations with explanations
+
+### Song Features Used
+Each song in the catalog has these attributes:
+- **genre** → the style of music (pop, rock, lofi, hip-hop, edm)
+- **mood** → the emotional feel (happy, chill, intense, sad, romantic)
+- **energy** → how energetic the song feels (0.0 = very calm, 1.0 = very intense)
+- **tempo_bpm** → speed of the song in beats per minute
+- **valence** → how positive or upbeat the song sounds (0.0 to 1.0)
+- **danceability** → how easy it is to dance to (0.0 to 1.0)
+- **acousticness** → how acoustic vs electronic it sounds (0.0 to 1.0)
+
+### User Profile Stores
+- **favorite_genre** → the genre the user likes most
+- **favorite_mood** → the mood the user prefers
+- **target_energy** → their ideal energy level (0.0 to 1.0)
+- **likes_acoustic** → whether they prefer acoustic sounds (True/False)
+
+### Algorithm Recipe (Scoring Rules)
+Every song is judged using these exact rules:
+- **+2.0 points** → song genre matches user's favorite genre
+- **+1.0 point** → song mood matches user's favorite mood
+- **+0.0 to +1.0** → how close the song's energy is to user's target
+- **+0.5 bonus** → if user likes acoustic and song acousticness > 0.6
+- **Maximum possible score** → 4.5 points
+
+### Potential Bias
+This system might over-prioritize genre, meaning a great song 
+with the wrong genre will always score lower than a mediocre 
+song with the right genre. It also does not consider listening 
+history, song popularity, or what the user has skipped before.
 ---
 
 ## Getting Started
