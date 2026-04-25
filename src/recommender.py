@@ -139,7 +139,7 @@ def score_song(user_prefs: Dict, song: Dict) -> Tuple[float, List[str]]:
     
     return (score, reasons)
 
-def recommend_songs(user_prefs: Dict, songs: List[Dict], k: int = 5) -> List[Tuple[Dict, float, str]]:
+def recommend_songs(user_prefs: Dict, songs: List[Dict], k: int = 5) -> List[Tuple[Dict, float, List[str]]]:
     """
     Functional implementation of the recommendation logic.
     
@@ -152,8 +152,8 @@ def recommend_songs(user_prefs: Dict, songs: List[Dict], k: int = 5) -> List[Tup
         k: Number of top recommendations to return (default 5)
     
     Returns:
-        List of tuples: (song_dict, score, explanation_string)
-        where explanation_string is reasons joined by ", "
+        List of tuples: (song_dict, score, reasons_list)
+        where reasons_list is the list of matching factors from score_song()
     
     Required by src/main.py
     """
@@ -162,8 +162,7 @@ def recommend_songs(user_prefs: Dict, songs: List[Dict], k: int = 5) -> List[Tup
     # Score each song
     for song in songs:
         score, reasons = score_song(user_prefs, song)
-        explanation = ", ".join(reasons)
-        scored.append((song, score, explanation))
+        scored.append((song, score, reasons))
     
     # Sort by score (highest to lowest)
     scored.sort(key=lambda x: x[1], reverse=True)

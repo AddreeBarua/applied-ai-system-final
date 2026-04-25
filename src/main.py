@@ -1,31 +1,41 @@
 """
-Command line runner for the Music Recommender Simulation.
+Command line runner for the Music Recommender Simulation — VibeFinder 2.0
 
-This file helps you quickly run and test your recommender.
-
-You will implement the functions in recommender.py:
-- load_songs
-- score_song
-- recommend_songs
+Now powered by Claude AI for natural-language recommendation explanations.
 """
 
-from recommender import load_songs, recommend_songs
+from src.recommender import load_songs, recommend_songs
+from src.ai_explainer import generate_ai_explanation
 from tabulate import tabulate
 
 
-def print_recommendations(profile_name: str, recommendations: list) -> None:
+def print_recommendations(profile_name: str, recommendations: list, user_profile: dict) -> None:
     """
-    Displays recommendations in a formatted table.
+    Displays recommendations in a formatted table with AI-generated explanations.
     
     Args:
         profile_name: Name of the user profile
-        recommendations: List of tuples (song_dict, score, explanation_string)
+        recommendations: List of tuples (song_dict, score, reasons_list)
+        user_profile: User's preference dict (passed to AI explainer for context)
     """
-    # Create table data
+    print(f"\n{'='*120}")
+    print(f"  {profile_name}")
+    print(f"{'='*120}")
+    print(f"\n  🤖 Generating AI-powered explanations with Claude...\n")
+    
     table_data = []
     
     for rank, rec in enumerate(recommendations, 1):
-        song, score, explanation = rec
+        song, score, reasons = rec
+        
+        # Call Claude to generate a natural-language explanation
+        ai_explanation = generate_ai_explanation(
+            song=song,
+            user_profile=user_profile,
+            score=score,
+            reasons=reasons
+        )
+        
         table_data.append([
             rank,
             song['title'],
@@ -33,23 +43,20 @@ def print_recommendations(profile_name: str, recommendations: list) -> None:
             song['genre'],
             song['mood'],
             f"{score:.2f}",
-            explanation
+            ai_explanation
         ])
     
-    # Define column headers
-    headers = ["Rank", "Title", "Artist", "Genre", "Mood", "Score", "Why Recommended"]
+    headers = ["Rank", "Title", "Artist", "Genre", "Mood", "Score", "Why Recommended (AI-Generated)"]
     
-    # Print profile header
-    print(f"\n{'='*120}")
-    print(f"  {profile_name}")
-    print(f"{'='*120}\n")
-    
-    # Print formatted table
     print(tabulate(table_data, headers=headers, tablefmt="fancy_grid"))
     print()
 
 
 def main() -> None:
+    print("\n" + "="*120)
+    print("  🎵 VibeFinder 2.0 — AI-Powered Music Recommender")
+    print("="*120)
+    
     songs = load_songs("data/songs.csv")
     
     # Profile 1: Happy Pop Fan (High Energy)
@@ -79,13 +86,12 @@ def main() -> None:
         "likes_acoustic": False
     }
     
-    # Test all three profiles
     profiles = [profile_1, profile_2, profile_3]
     
     for profile in profiles:
-        profile_name = profile.pop("name")  # Extract name for display
+        profile_name = profile.pop("name")
         recommendations = recommend_songs(profile, songs, k=5)
-        print_recommendations(profile_name, recommendations)
+        print_recommendations(profile_name, recommendations, profile)
 
 
 if __name__ == "__main__":
