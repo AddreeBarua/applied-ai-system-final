@@ -1,282 +1,249 @@
-# 🎵 Music Recommender Simulation
+ VibeFinder 2.0 — AI-Powered Music Recommender
 
-## Project Summary
+> An applied AI system that combines rule-based scoring with Claude-generated natural-language explanations, retrieval-augmented generation (RAG), input guardrails, persistent logging, and an automated test harness.
 
-In this project you will build and explain a small music recommender system.
-
-Your goal is to:
-
-- Represent songs and a user "taste profile" as data
-- Design a scoring rule that turns that data into recommendations
-- Evaluate what your system gets right and wrong
-- Reflect on how this mirrors real world AI recommenders
-
-Replace this paragraph with your own summary of what your version does.
+**Author:** Addree Barua  
+**Course:** AI Engineering Program — Module 5 (Applied AI Systems)  
+**Date:** April 2026  
+**Repository:** https://github.com/AddreeBarua/applied-ai-system-final
 
 ---
 
-## How The System Works
+## Base Project (Module 3 Origin)
 
-Explain your design in plain language.
+This system extends my **Module 3 project, VibeFinder 1.0** (Music Recommender Simulation), into a full applied AI system.
 
-Some prompts to answer:
+The original VibeFinder 1.0 was a Python program that scored every song in a 20-song catalog against a user's taste profile (genre, mood, energy, acoustic preference) using a simple point-based scoring rule, then returned the top 5 matches with mechanical reason strings like `genre match (+2.0), mood match (+1.0)`. It worked, but it could not explain its choices in human language and had no safety, logging, or evaluation infrastructure.
 
-- What features does each `Song` use in your system
-  - For example: genre, mood, energy, tempo
-- What information does your `UserProfile` store
-- How does your `Recommender` compute a score for each song
-- How do you choose which songs to recommend
-
-You can include a simple diagram or bullet list if helpful.
-
-## How The System Works
-
-Real-world platforms like Spotify and YouTube study the actual 
-characteristics of songs — things like genre, mood, and energy 
-level — and match them against what a user has shown they enjoy. 
-My system does the same thing on a smaller scale using a simple 
-point-based scoring approach.
-
-### What The System Does Step By Step
-
-1. It loads a catalog of 20 songs from songs.csv
-2. It reads the user's taste profile (genre, mood, energy preference)
-3. It scores every single song against that profile
-4. It sorts all scores from highest to lowest
-5. It returns the top 5 songs as recommendations with explanations
-
-### Song Features Used
-Each song in the catalog has these attributes:
-- **genre** → the style of music (pop, rock, lofi, hip-hop, edm)
-- **mood** → the emotional feel (happy, chill, intense, sad, romantic)
-- **energy** → how energetic the song feels (0.0 = very calm, 1.0 = very intense)
-- **tempo_bpm** → speed of the song in beats per minute
-- **valence** → how positive or upbeat the song sounds (0.0 to 1.0)
-- **danceability** → how easy it is to dance to (0.0 to 1.0)
-- **acousticness** → how acoustic vs electronic it sounds (0.0 to 1.0)
-
-### User Profile Stores
-- **favorite_genre** → the genre the user likes most
-- **favorite_mood** → the mood the user prefers
-- **target_energy** → their ideal energy level (0.0 to 1.0)
-- **likes_acoustic** → whether they prefer acoustic sounds (True/False)
-
-### Algorithm Recipe (Scoring Rules)
-Every song is judged using these exact rules:
-- **+2.0 points** → song genre matches user's favorite genre
-- **+1.0 point** → song mood matches user's favorite mood
-- **+0.0 to +1.0** → how close the song's energy is to user's target
-- **+0.5 bonus** → if user likes acoustic and song acousticness > 0.6
-- **Maximum possible score** → 4.5 points
-
-### Potential Bias
-This system might over-prioritize genre, meaning a great song 
-with the wrong genre will always score lower than a mediocre 
-song with the right genre. It also does not consider listening 
-history, song popularity, or what the user has skipped before.
 ---
 
-## Getting Started
+## Title and Summary
 
-### Setup
+**VibeFinder 2.0** turns a rule-based music recommender into an applied AI system. It still uses the original scoring logic to pick the top 5 songs, but now Claude (Anthropic's LLM) writes a friendly, personalized explanation for each pick. Before generating those explanations, the system retrieves song-specific descriptions from a custom knowledge base (RAG), so Claude grounds its output in real song details instead of guessing. The whole pipeline is wrapped in input guardrails, structured logging, and an automated test harness so the system is both safe and verifiable.
 
-1. Create a virtual environment (optional but recommended):
+This matters because most AI projects in the real world are exactly this shape: a small model call surrounded by a lot of validation, retrieval, and reliability infrastructure. The point of this project was to learn that "applied AI" is mostly the plumbing, and to build that plumbing properly.
 
-   ```bash
-   python -m venv .venv
-   source .venv/bin/activate      # Mac or Linux
-   .venv\Scripts\activate         # Windows
+---
 
-2. Install dependencies
+## Architecture Overview
+
+![System Architecture](assets/architecture.png)
+
+The diagram above shows the full data flow through VibeFinder 2.0. A user runs `python -m src.main`, which defines three test profiles. Each profile passes through two guardrail checks (validation and sanitization) before reaching the rule-based scorer. The scorer loads the 20-song catalog, ranks the top 5, and logs the request. Each top result then triggers a RAG retrieval against `data/song_info.csv` — the lookup result is injected into the Claude prompt, and Claude generates a natural-language explanation. If the API fails, a template fallback runs instead, so the system never crashes. Final results are displayed in a formatted table. An optional test harness (`python -m tests.test_harness`) runs the same pipeline through 6 predefined cases (3 valid, 3 invalid) and prints a Pass/Fail summary.
+
+The colors in the diagram correspond to component categories: green = entry/exit, orange = guardrails, blue = RAG, purple = LLM, yellow = logging or fallback, pink = test harness.
+
+---
+
+## Setup Instructions
+
+### Prerequisites
+
+- Python 3.10 or higher
+- An Anthropic API key — sign up at [console.anthropic.com](https://console.anthropic.com) (free credits available for new accounts)
+
+### Step 1 — Clone the Repository
+
+```bash
+git clone https://github.com/AddreeBarua/applied-ai-system-final.git
+cd applied-ai-system-final
+```
+
+### Step 2 — Install Dependencies
 
 ```bash
 pip install -r requirements.txt
 ```
 
-3. Run the app:
+This installs `anthropic`, `python-dotenv`, `tabulate`, and `pytest`.
+
+### Step 3 — Add Your Claude API Key
+
+Create a `.env` file in the project root and add your key:
+
+```bash
+touch .env
+echo "ANTHROPIC_API_KEY=sk-ant-api03-your-key-here" > .env
+```
+
+The `.env` file is listed in `.gitignore`, so it will never be committed.
+
+### Step 4 — Run the System
 
 ```bash
 python -m src.main
 ```
 
-### Running Tests
+You should see three formatted tables, one per user profile, each with five AI-generated recommendations.
 
-Run the starter tests with:
+### Step 5 — Run the Test Harness
 
 ```bash
-pytest
+python -m tests.test_harness
 ```
 
-You can add more tests in `tests/test_recommender.py`.
+This runs all 6 automated tests and prints a Pass/Fail summary.
+
+### Step 6 — Inspect the Logs
+
+```bash
+cat logs/vibefinder.log
+```
+
+Every recommendation request and every validation failure is logged here with a timestamp.
 
 ---
 
-## Experiments You Tried
+## Sample Interactions
 
-Use this section to document the experiments you ran. For example:
+The system was tested with three distinct user profiles. Below are the actual top-ranked outputs from a real run.
 
-- What happened when you changed the weight on genre from 2.0 to 0.5
-- What happened when you added tempo or valence to the score
-- How did your system behave for different types of users
+### Sample 1 — Happy Pop Fan
 
-## Experiments I Tried
+**Input:**
+```python
+{"genre": "pop", "mood": "happy", "energy": 0.8, "likes_acoustic": False}
+```
 
-### Profile 1: Happy Pop Fan
-- Genre: pop | Mood: happy | Energy: 0.8
-- Top result: Sunrise City (3.98) — genre + mood + energy all matched
-- [INSERT SCREENSHOT HERE]
+**Output (top recommendation):**
+Rank 1: Sunrise City by Neon Echo  (score: 3.98)
+AI explanation: "Sunrise City by Neon Echo is perfect for you — it has those
+bright synth-pop melodies and feel-good energy that match your happy vibe!"
 
-### Profile 2: Chill Lofi Listener
-- Genre: lofi | Mood: chill | Energy: 0.2 | Likes acoustic: Yes
-- Top result: Library Rain (4.35) — perfect match on all 4 factors
-- Spacewalk Thoughts appeared despite being ambient not lofi 
-  because its chill mood and low energy still scored well
-- [INSERT SCREENSHOT HERE]
+### Sample 2 — Chill Lofi Listener
 
-### Profile 3: Intense Rock Fan
-- Genre: rock | Mood: intense | Energy: 0.9
-- Top result: Storm Runner (3.99) — perfect rock/intense/high energy match
-- Gym Hero appeared at #2 despite being pop because its 
-  intensity and high energy still scored points
-- [INSERT SCREENSHOT HERE]
+**Input:**
+```python
+{"genre": "lofi", "mood": "chill", "energy": 0.2, "likes_acoustic": True}
+```
 
-### What I Noticed
-- The lofi profile benefits most from the acousticness bonus
-- Rock fan gets fewer perfect matches because fewer rock 
-  songs are in the dataset
-- Genre is clearly the biggest factor — wrong genre = big score drop
----
+**Output (top recommendation):**
+Rank 1: Library Rain by Paper Lanterns  (score: 4.35)
+AI explanation: "Library Rain by Paper Lanterns pairs gentle rain sounds with
+mellow keys — perfect for that cozy, focused chill vibe you love!"
 
-## Limitations and Risks
+### Sample 3 — Guardrail Catches Invalid Input
 
-Summarize some limitations of your recommender.
+**Input:**
+```python
+{"genre": "jazz_fusion_dubstep", "mood": "happy", "energy": 999, "likes_acoustic": False}
+```
 
-Examples:
+**Output:**
+[GUARDRAIL] Skipping profile: Genre 'jazz_fusion_dubstep' is not in our catalog.
+[Logged to logs/vibefinder.log as VALIDATION_FAILED]
 
-- It only works on a tiny catalog
-- It does not understand lyrics or language
-- It might over favor one genre or mood
-
-You will go deeper on this in your model card.
+The system continues processing other profiles instead of crashing.
 
 ---
 
-## Reflection
+## Design Decisions
 
-Read and complete `model_card.md`:
+**Why RAG instead of just the LLM?**  
+Without RAG, Claude only sees structured fields (genre, mood, energy numbers) and has to invent specifics about each song. With RAG, Claude sees real descriptions ("driving guitar riffs", "synth-pop melodies", "warm acoustic instrumentation") pulled from `data/song_info.csv`. This dramatically improves explanation accuracy — Claude no longer has to make up sonic details. It also lets me update song knowledge without retraining anything.
 
-[**Model Card**](model_card.md)
+**Why a fallback template?**  
+Production AI systems should degrade gracefully. If the Claude API is down, rate-limited, or the user's API key expires, VibeFinder still produces a useful (if less rich) explanation rather than crashing. This is implemented in `_fallback_explanation()` and tested as part of the harness.
 
-Write 1 to 2 paragraphs here about what you learned:
+**Why custom guardrails instead of letting Claude handle bad input?**  
+Guardrails fail fast and cheaply. Validating a profile takes microseconds and zero API calls; sending malformed input to Claude wastes tokens and produces unpredictable behavior. The guardrail layer also produces structured error messages that can be logged and analyzed.
 
-- about how recommenders turn data into predictions
-- about where bias or unfairness could show up in systems like this
+**Why an independent test harness alongside pytest?**  
+Pytest is great for unit tests of pure functions. The test harness (`tests/test_harness.py`) tests the full system end-to-end with the real API, including AI explanation quality (does the response mention the song name? Is it non-empty?). That kind of integration check is hard to express cleanly in pytest.
 
-
----
-
-## 7. `model_card_template.md`
-
-Combines reflection and model card framing from the Module 3 guidance. :contentReference[oaicite:2]{index=2}  
-
-```markdown
-# 🎧 Model Card - Music Recommender Simulation
-
-## 1. Model Name
-
-Give your recommender a name, for example:
-
-> VibeFinder 1.0
+**Trade-off: API cost vs. UX.**  
+Each recommendation call costs ~$0.001 in API tokens, which is fine for a classroom project but would need caching and batching at scale. For now, the system makes one Claude call per top-5 result (15 calls per full run), which is acceptable for demo purposes.
 
 ---
 
-## 2. Intended Use
+## Testing Summary
 
-- What is this system trying to do
-- Who is it for
+The automated test harness in `tests/test_harness.py` runs 6 tests covering 21 individual checks.
 
-Example:
+**Latest run: 6 / 6 tests passed.**
 
-> This model suggests 3 to 5 songs from a small catalog based on a user's preferred genre, mood, and energy level. It is for classroom exploration only, not for real users.
+| Section | Tests | What It Checks |
+|---|---|---|
+| Recommendation Quality | 3 | For each profile: 5 results returned, top genre matches expectation, top score above threshold, AI explanation non-empty, explanation references song or artist by name. |
+| Guardrails | 3 | Verifies that bad profiles (unknown genre, energy out of range, missing keys) are correctly rejected by the validation layer. |
 
----
+**What worked well:**  
+All three valid profiles produced correctly-ranked results with grounded, on-topic AI explanations that mentioned the song name in every case. The guardrails correctly rejected all three bad-input cases with clear error messages logged to `logs/vibefinder.log`.
 
-## 3. How It Works (Short Explanation)
+**What didn't work initially:**  
+On the first run of `python -m src.main`, I got `ModuleNotFoundError: No module named 'recommender'` because my imports were relative. I fixed this by changing them to `from src.recommender import ...`. I also noticed that one Claude response in Profile 3 included an emoji (🔥) even though my prompt did not request one — a reminder that LLM output is non-deterministic and prompts cannot fully control style.
 
-Describe your scoring logic in plain language.
-
-- What features of each song does it consider
-- What information about the user does it use
-- How does it turn those into a number
-
-Try to avoid code in this section, treat it like an explanation to a non programmer.
-
----
-
-## 4. Data
-
-Describe your dataset.
-
-- How many songs are in `data/songs.csv`
-- Did you add or remove any songs
-- What kinds of genres or moods are represented
-- Whose taste does this data mostly reflect
+**What I learned:**  
+End-to-end tests with the real API caught issues that unit tests would have missed (like the import path bug and prompt-format issues). Logs proved invaluable when debugging — having a timestamped record of every request and every validation failure made root-cause analysis fast.
 
 ---
 
-## 5. Strengths
+## Reflection (Required Reflection Prompts)
 
-Where does your recommender work well
+### What are the limitations or biases in your system?
 
-You can think about:
-- Situations where the top results "felt right"
-- Particular user profiles it served well
-- Simplicity or transparency benefits
+The catalog is tiny (20 songs), so the system can never recommend something genuinely novel — it only re-ranks what's there. The scoring rule weights genre at +2.0 (the highest weight), which means a genre-matched mediocre song will always beat a non-matched great song. The hand-written knowledge base in `data/song_info.csv` reflects my own descriptive choices and English-language framing; it doesn't represent how speakers of other languages, or fans from other regions, would describe these tracks. Claude's training data also has its own cultural and stylistic biases that get inherited into our explanations.
 
----
+### Could your AI be misused, and how would you prevent that?
 
-## 6. Limitations and Bias
+The biggest misuse risk is using LLM-written explanations to falsely market songs the user wouldn't actually like — for example, a streaming service generating glowing AI explanations to push songs that pay for placement. To prevent this, I would (1) clearly disclose that explanations are AI-generated, (2) require explanations to be grounded in retrieved facts (which RAG already encourages), (3) log every explanation for after-the-fact auditing, and (4) never let the LLM override the rule-based scoring — Claude only writes the explanation, never decides the rank.
 
-Where does your recommender struggle
+### What surprised you while testing your AI's reliability?
 
-Some prompts:
-- Does it ignore some genres or moods
-- Does it treat all users as if they have the same taste shape
-- Is it biased toward high energy or one genre by default
-- How could this be unfair if used in a real product
+Two surprises stood out. First, how much **prompt wording** changed output quality — adding "vary your openings" and "mention the song name" made Claude's explanations measurably more varied and useful. Second, how much **the fallback layer earned its place**. During development I deliberately left the API key blank to test the template fallback, and the system kept working with no errors. That confidence in graceful degradation is something I now value far more than I did before this project.
 
----
+### Describe your collaboration with AI during this project. Give one helpful and one flawed suggestion.
 
-## 7. Evaluation
+I used Claude (in chat) extensively as a coding partner throughout this project — both for code generation and for design questions.
 
-How did you check your system
+**Helpful suggestion:** When I was building `src/guardrails.py`, Claude suggested I use `dict.get(key, default)` instead of direct `dict[key]` access when reading profile fields. I adopted this immediately because it prevents `KeyError` if a field is missing and makes the validation layer more defensive. This pattern shows up throughout the file now.
 
-Examples:
-- You tried multiple user profiles and wrote down whether the results matched your expectations
-- You compared your simulation to what a real app like Spotify or YouTube tends to recommend
-- You wrote tests for your scoring logic
-
-You do not need a numeric metric, but if you used one, explain what it measures.
+**Flawed suggestion:** Claude initially suggested using `pip freeze > requirements.txt` to capture my dependencies. I ran the command and it dumped 200+ packages from my entire conda environment into the file — completely unusable for someone trying to install just my project's dependencies. I rejected this and manually wrote a clean four-line `requirements.txt` listing only `pytest`, `tabulate`, `anthropic`, and `python-dotenv`. The lesson: convenient AI suggestions can be technically correct but contextually wrong, and you have to know enough to recognize that.
 
 ---
 
-## 8. Future Work
+## Demo Video
 
-If you had more time, how would you improve this recommender
+A walkthrough of the system running end-to-end is available on Loom:
 
-Examples:
+**[Loom video link will be added after recording]**
 
-- Add support for multiple users and "group vibe" recommendations
-- Balance diversity of songs instead of always picking the closest match
-- Use more features, like tempo ranges or lyric themes
+The video demonstrates:
+- End-to-end system run with 3 user profiles
+- RAG behavior (Claude using retrieved song descriptions)
+- Guardrail behavior (catching invalid input)
+- Test harness running and printing the 6/6 pass summary
 
 ---
 
-## 9. Personal Reflection
+## Repository Structure
+applied-ai-system-final/
+├── assets/
+│   └── architecture.png          # System architecture diagram
+├── data/
+│   ├── songs.csv                 # 20-song catalog with audio features
+│   └── song_info.csv             # RAG knowledge base (1 description per song)
+├── logs/
+│   └── vibefinder.log            # Persistent recommendation logs
+├── src/
+│   ├── ai_explainer.py           # Claude API integration with RAG and fallback
+│   ├── guardrails.py             # Input validation, sanitization, logging
+│   ├── main.py                   # CLI entry point
+│   ├── rag_retriever.py          # Knowledge base lookup
+│   ├── recommender.py            # Rule-based scorer
+│   ├── scoring_system.py         # Reference scoring functions
+│   └── user_profiles.py          # Profile constants
+├── tests/
+│   ├── test_recommender.py       # Pytest unit tests
+│   └── test_harness.py           # Automated end-to-end evaluation harness
+├── .env                          # API key (gitignored)
+├── .gitignore
+├── README.md                     # This file
+├── model_card.md                 # Reflections, limitations, ethics
+└── requirements.txt
 
-A few sentences about what you learned:
+---
 
-- What surprised you about how your system behaved
-- How did building this change how you think about real music recommenders
-- Where do you think human judgment still matters, even if the model seems "smart"
+## Portfolio Reflection
 
+This project says I am an AI engineer who values reliability over novelty. I did not build the most elaborate system possible in the time I had — I built one that handles bad input cleanly, explains its decisions in human language, falls back gracefully when the API is unavailable, and proves it works through automated tests. Those traits are what I would bring to any AI engineering role.
