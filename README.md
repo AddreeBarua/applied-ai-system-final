@@ -1,4 +1,4 @@
- VibeFinder 2.0 — AI-Powered Music Recommender
+# VibeFinder 2.0 — AI-Powered Music Recommender
 
 > An applied AI system that combines rule-based scoring with Claude-generated natural-language explanations, retrieval-augmented generation (RAG), input guardrails, persistent logging, and an automated test harness.
 
@@ -40,7 +40,7 @@ The colors in the diagram correspond to component categories: green = entry/exit
 ### Prerequisites
 
 - Python 3.10 or higher
-- An Anthropic API key — sign up at [console.anthropic.com](https://console.anthropic.com) (free credits available for new accounts)
+- An Anthropic API key — sign up at [console.anthropic.com](https://console.anthropic.com) 
 
 ### Step 1 — Clone the Repository
 
@@ -194,7 +194,7 @@ Two surprises stood out. First, how much **prompt wording** changed output quali
 
 ### Describe your collaboration with AI during this project. Give one helpful and one flawed suggestion.
 
-I used Claude (in chat) extensively as a coding partner throughout this project — both for code generation and for design questions.
+I used Claude extensively as a coding partner throughout this project — both for code generation and for design questions.
 
 **Helpful suggestion:** When I was building `src/guardrails.py`, Claude suggested I use `dict.get(key, default)` instead of direct `dict[key]` access when reading profile fields. I adopted this immediately because it prevents `KeyError` if a field is missing and makes the validation layer more defensive. This pattern shows up throughout the file now.
 
