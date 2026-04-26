@@ -114,4 +114,4 @@ I used Claude (in chat) as a coding partner throughout this project for code gen
 
 ## 11. Portfolio Reflection
 
-This project taught me that an applied AI system is mostly plumbing around a model, not the model itself. About 80% of the code in this repo handles validation, retrieval, fallback, logging, and testing — and only one small function actually calls the LLM. That 80% is what separates a fragile demo from something you could ship. I will carry that lesson into every AI project I build.hese surrounding components are what make the system practical and trustworthy in real-world scenarios.
+This project taught me that an applied AI system is mostly plumbing around a model, not the model itself. About 80% of the code in this repo handles validation, retrieval, fallback, logging, and testing — and only one small function actually calls the LLM. That 80% is what separates a fragile demo from something you could ship. I will carry that lesson into every AI project I build.
