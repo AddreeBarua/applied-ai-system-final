@@ -206,7 +206,7 @@ I used Claude extensively as a coding partner throughout this project — both f
 
 A walkthrough of the system running end-to-end is available on Loom:
 
-**[Loom video link will be added after recording]**
+**[https://www.loom.com/share/29689760b8da4cce8716cf57a9e58fe0]**
 
 The video demonstrates:
 - End-to-end system run with 3 user profiles
